@@ -4,6 +4,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.poixson.webxbukkit.PluginVersion;
+import com.poixson.webxbukkit.webSettings.SettingsManager;
 
 
 public class WebAuctionPlus extends JavaPlugin {
@@ -12,8 +13,13 @@ public class WebAuctionPlus extends JavaPlugin {
 	private static final Object lock = new Object();
 
 	// objects
+	private volatile waConfig config = null;
+	private volatile SettingsManager settings = null;
 	private volatile PluginVersion version = null;
 	private final waLanguage lang = new waLanguage();
+
+	// database key
+	private volatile String dbKey = null;
 
 	// run state
 	private static volatile Boolean isOk = null;
@@ -38,14 +44,19 @@ public class WebAuctionPlus extends JavaPlugin {
 			}
 			isOk = false;
 		}
-		// language
-		lang.load(this, "en");
+
 		// plugin version
 		version = PluginVersion.get(this);
 		version.update();
 
-
-
+		// config.yml
+		config = new waConfig(this);
+		// connect to db
+		dbKey = config.dbKey();
+		// shared settings
+		settings = SettingsManager.get(dbKey);
+		// language
+		lang.load(this, "en");
 
 		isOk = true;
 	}
