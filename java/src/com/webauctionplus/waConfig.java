@@ -7,6 +7,9 @@ import com.poixson.webxbukkit.ConfigLoader.xBukkitConfig;
 
 public class waConfig extends xBukkitConfig {
 
+	public static final String PATH_Inventory_AllowCommand = "Inventory.AllowCommand";
+	public static final String PATH_Inventory_AllowSign    = "Inventory.AllowSign";
+
 
 	public waConfig(Plugin plugin) {
 		super(plugin);
@@ -17,10 +20,10 @@ public class waConfig extends xBukkitConfig {
 	protected void defaults() {
 		// database
 		defaultDatabase();
-		config.addDefault("Database.Prefix",	"wa_");
+		config.addDefault(xBukkitConfig.PATH_Database_Prefix, "wa_");
 		// inventory
-		config.addDefault("Inventory.AllowCommand", true);
-		config.addDefault("Inventory.AllowSign",    true);
+		config.addDefault(PATH_Inventory_AllowCommand, true);
+		config.addDefault(PATH_Inventory_AllowSign,    true);
 	}
 
 
