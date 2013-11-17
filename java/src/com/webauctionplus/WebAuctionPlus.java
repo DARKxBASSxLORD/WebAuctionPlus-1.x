@@ -1,11 +1,14 @@
 package com.webauctionplus;
 
+import java.io.IOException;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.mcstats.MetricsManager;
 
 import com.poixson.webxbukkit.PluginVersion;
-import com.poixson.webxbukkit.Vault;
+import com.poixson.webxbukkit.Plugins3rdParty;
 import com.poixson.webxbukkit.webLink.LinkManager;
 import com.poixson.webxbukkit.webSettings.SettingsManager;
 
@@ -23,7 +26,6 @@ public class WebAuctionPlus extends JavaPlugin {
 	private volatile PluginVersion version = null;
 	private final waLanguage lang = new waLanguage();
 	// web link
-@SuppressWarnings("unused")
 	private volatile LinkManager link = null;
 
 	// database key
@@ -62,12 +64,15 @@ public class WebAuctionPlus extends JavaPlugin {
 			if(instance == null)
 				instance = this;
 		}
-		// load vault (required)
-		if(Vault.getEconomy() == null) {
-			System.out.println("Economy plugin not found!");
+		// load vault economy (required)
+		if(Plugins3rdParty.get().getEconomy() == null) {
+			System.out.println("Economy plugin not found");
 			Bukkit.getPluginManager().disablePlugin(this);
 			return;
 		}
+		// load world guard
+		if(Plugins3rdParty.get().getWorldGuard() != null)
+			System.out.println("WorldGuard plugin found");
 
 		// plugin version
 		version = PluginVersion.get(this);
@@ -80,17 +85,28 @@ public class WebAuctionPlus extends JavaPlugin {
 		settings = SettingsManager.get(dbKey);
 		// language
 		lang.load(this, "en");
+
 		// web link
 		link = LinkManager.get(dbKey);
-		LinkManager.start();
-
-
-
-
-
-
+		// economy
+		link.setEnabled("economy", true);
+		// inventory
+		link.setEnabled("inventory", true);
+		// permissions
+		link.setEnabled("perms", true);
+		// worldguard
+		link.setEnabled("worldguard", true);
+		// start updates
+		link.start();
 
 		isOk = true;
+//		log = xLog.getRoot().get("WebAPI");
+//		log.info("Loaded API "+this.getDescription().getVersion());
+		try {
+			MetricsManager.get(this).start();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	@Override
 	public void onDisable() {
